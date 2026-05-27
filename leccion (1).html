@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lección 1.1 – Definición y tipos de conjuntos | MathCourse</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+<!-- Firebase -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+  import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD4OqnfTQITgs7lU7j0jQ943nPpyJLVIs4",
+    authDomain: "mathcourse-16712.firebaseapp.com",
+    projectId: "mathcourse-16712",
+    storageBucket: "mathcourse-16712.firebasestorage.app",
+    messagingSenderId: "976905525407",
+    appId: "1:976905525407:web:f23ae53e1e23409e796aaa"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+
+// Permitir token de prueba para desarrollo local
+if (token === 'test') {
+  document.getElementById('contenido').style.display = 'block';
+  document.getElementById('acceso-denegado').style.display = 'none';
+} 
+  else if (!token) {
+    window.location.href = 'index.html';
+  } else {
+    try {
+      const snap = await getDoc(doc(db, 'tokens', token));
+      if (!snap.exists()) {
+        window.location.href = 'index.html';
+      } else {
+        const datos = snap.data();
+        document.addEventListener('DOMContentLoaded', () => {
+          const av = document.getElementById('user-avatar');
+          const nm = document.getElementById('user-nombre');
+          if (av) av.textContent = datos.nombre.charAt(0).toUpperCase();
+          if (nm) nm.textContent = datos.nombre.split(' ')[0];
+        });
+      }
+    } catch(e) {
+      window.location.href = 'index.html';
+    }
+  }
+</script>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --magenta:#e600ac;
+  --dark:#2b2d42;
+  --orange:#ff6b35;
+  --green:#10b981;
+  --blue:#3b82f6;
+  --bg:#f4f6fb;
+  --white:#fff;
+  --border:#e8eaf0;
+}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);}
+
+/* TOPBAR */
+.topbar{background:var(--white);border-bottom:1px solid var(--border);padding:14px 40px;display:flex;align-items:center;justify-content:space-between;}
+.logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--dark);}
+.logo span{color:var(--magenta);}
+.user-info{display:flex;align-items:center;gap:10px;font-size:14px;color:#666;}
+.avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--magenta),#ff6b9d);display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:13px;}
+.back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:#888;text-decoration:none;padding:7px 14px;border-radius:8px;border:1.5px solid var(--border);background:var(--white);font-family:'Poppins',sans-serif;cursor:pointer;transition:all .2s;}
+.back-btn:hover{color:var(--magenta);border-color:var(--magenta);}
+
+/* BREADCRUMB */
+.breadcrumb{padding:16px 40px;display:flex;align-items:center;gap:8px;font-size:13px;color:#aaa;}
+.breadcrumb a{color:var(--magenta);text-decoration:none;}
+.breadcrumb a:hover{text-decoration:underline;}
+
+/* LAYOUT */
+.layout{display:flex;gap:28px;padding:0 40px 60px;max-width:1200px;margin:0 auto;}
+
+/* SIDEBAR */
+.sidebar{width:260px;flex-shrink:0;}
+.sidebar-card{background:var(--white);border-radius:14px;border:1.5px solid var(--border);overflow:hidden;position:sticky;top:20px;}
+.sidebar-header{padding:18px 20px;background:linear-gradient(135deg,var(--dark),#1a1040);color:#fff;}
+.sidebar-header h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:15px;margin-bottom:4px;}
+.sidebar-header p{font-size:12px;color:rgba(255,255,255,.6);}
+.sidebar-progress{padding:16px 20px;border-bottom:1px solid var(--border);}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:6px;}
+.progress-track{height:6px;background:#f0f0f0;border-radius:10px;overflow:hidden;}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--magenta),#ff6b9d);border-radius:10px;width:0%;transition:width .5s;}
+.lesson-nav{padding:12px 0;}
+.lesson-nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;transition:background .15s;font-size:13px;color:#666;}
+.lesson-nav-item:hover{background:#fdf0fa;color:var(--magenta);}
+.lesson-nav-item.active{background:#fdf0fa;color:var(--magenta);font-weight:600;}
+.lesson-nav-item .check{width:20px;height:20px;border-radius:50%;border:2px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .2s;}
+.lesson-nav-item.done .check{background:var(--green);border-color:var(--green);color:#fff;}
+.lesson-nav-item.active .check{border-color:var(--magenta);}
+
+/* MAIN */
+.main{flex:1;min-width:0;}
+
+/* LESSON HERO */
+.lesson-hero{background:linear-gradient(135deg,var(--dark) 0%,#1a1040 100%);border-radius:16px;padding:32px 36px;margin-bottom:24px;position:relative;overflow:hidden;}
+.lesson-hero::before{content:'{ }';position:absolute;right:30px;top:50%;transform:translateY(-50%);font-size:120px;opacity:.05;color:#fff;font-family:monospace;font-weight:900;}
+.lesson-tag{font-size:11px;font-weight:700;letter-spacing:3px;color:var(--magenta);text-transform:uppercase;margin-bottom:10px;}
+.lesson-hero h1{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.7rem;color:#fff;margin-bottom:14px;line-height:1.2;}
+.lesson-meta{display:flex;gap:16px;flex-wrap:wrap;}
+.meta-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.15);border-radius:20px;padding:5px 14px;font-size:12px;color:rgba(255,255,255,.8);}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:24px;background:var(--white);border-radius:12px;padding:6px;border:1.5px solid var(--border);}
+.tab{flex:1;padding:10px;text-align:center;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;color:#888;transition:all .2s;border:none;background:none;font-family:'Poppins',sans-serif;display:flex;align-items:center;justify-content:center;gap:6px;}
+.tab:hover{color:var(--dark);}
+.tab.active{background:var(--dark);color:#fff;box-shadow:0 2px 8px rgba(0,0,0,.15);}
+.tab-icon{font-size:15px;}
+
+/* TAB PANELS */
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* ── PANEL 1: CLASE ── */
+.content-card{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:32px;margin-bottom:20px;}
+.content-card h2{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.2rem;color:var(--dark);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.content-card h2 .icon{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--magenta),#ff6b9d);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;}
+.content-card p{font-size:14px;color:#555;line-height:1.8;margin-bottom:14px;}
+.content-card p:last-child{margin-bottom:0;}
+
+.definition-box{background:#fdf0fa;border-left:4px solid var(--magenta);border-radius:0 10px 10px 0;padding:16px 20px;margin:20px 0;}
+.definition-box strong{font-size:13px;font-weight:700;color:var(--magenta);display:block;margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;}
+.definition-box p{font-size:14px;color:var(--dark);line-height:1.7;margin:0;}
+
+.example-box{background:#f0f9ff;border-left:4px solid var(--blue);border-radius:0 10px 10px 0;padding:16px 20px;margin:20px 0;}
+.example-box strong{font-size:13px;font-weight:700;color:var(--blue);display:block;margin-bottom:6px;letter-spacing:1px;text-transform:uppercase;}
+.example-box p{font-size:14px;color:var(--dark);line-height:1.7;margin:0;}
+
+.types-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0;}
+.type-card{background:#f9f9fb;border-radius:10px;padding:16px;border:1.5px solid var(--border);}
+.type-card .type-name{font-weight:700;font-size:13px;color:var(--dark);margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.type-card .type-name span{width:8px;height:8px;border-radius:50%;background:var(--magenta);display:inline-block;}
+.type-card p{font-size:12px;color:#777;line-height:1.6;}
+.type-card code{background:#f0e6fa;color:var(--magenta);padding:2px 8px;border-radius:4px;font-size:12px;}
+
+/* ── PANEL 2: MATLAB ── */
+.matlab-intro{background:linear-gradient(135deg,#1e3a5f,#0f2040);border-radius:14px;padding:28px 32px;margin-bottom:20px;display:flex;align-items:center;gap:20px;}
+.matlab-logo{font-size:48px;flex-shrink:0;}
+.matlab-intro h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.3rem;color:#fff;margin-bottom:6px;}
+.matlab-intro p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;}
+
+.step-card{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:24px;margin-bottom:16px;display:flex;gap:18px;}
+.step-num{width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,var(--magenta),#ff6b9d);color:#fff;font-weight:800;font-size:15px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step-content h3{font-size:14px;font-weight:700;color:var(--dark);margin-bottom:8px;}
+.step-content p{font-size:13px;color:#666;line-height:1.7;margin-bottom:10px;}
+
+.code-block{background:#1e2030;border-radius:10px;padding:16px 20px;font-family:monospace;font-size:13px;line-height:1.8;position:relative;overflow-x:auto;}
+.code-block .comment{color:#6a7394;}
+.code-block .keyword{color:#c792ea;}
+.code-block .string{color:#c3e88d;}
+.code-block .number{color:#f78c6c;}
+.code-block .func{color:#82aaff;}
+.code-block .var{color:#eeffff;}
+.copy-btn{position:absolute;top:10px;right:10px;background:rgba(255,255,255,.1);border:none;color:#aaa;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;transition:all .2s;font-family:'Poppins',sans-serif;}
+.copy-btn:hover{background:rgba(255,255,255,.2);color:#fff;}
+
+.tip-box{background:#f0fdf4;border-left:4px solid var(--green);border-radius:0 10px 10px 0;padding:14px 18px;margin-top:14px;}
+.tip-box strong{font-size:12px;font-weight:700;color:var(--green);display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;}
+.tip-box p{font-size:13px;color:#333;line-height:1.6;margin:0;}
+
+/* ── PANEL 3: TAREA ── */
+.exercise-card{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:32px;margin-bottom:20px;}
+.exercise-header{display:flex;align-items:center;gap:14px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+.exercise-icon{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--orange),#ff8c42);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.exercise-header h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.2rem;color:var(--dark);}
+.exercise-header p{font-size:13px;color:#888;margin-top:2px;}
+
+.exercise-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:24px;}
+.exercise-item{display:flex;align-items:flex-start;gap:12px;padding:16px;background:#f9f9fb;border-radius:10px;border:1.5px solid var(--border);}
+.ex-num{width:28px;height:28px;border-radius:8px;background:var(--dark);color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.ex-text{font-size:14px;color:var(--dark);line-height:1.6;}
+.ex-text code{background:#f0e6fa;color:var(--magenta);padding:2px 8px;border-radius:4px;font-size:13px;}
+
+/* UPLOAD ZONE */
+.upload-zone{border:2.5px dashed #d0d5e8;border-radius:14px;padding:40px;text-align:center;cursor:pointer;transition:all .25s;background:#fafbff;}
+.upload-zone:hover,.upload-zone.dragover{border-color:var(--magenta);background:#fdf0fa;}
+.upload-icon{font-size:48px;margin-bottom:14px;}
+.upload-zone h3{font-family:'Nunito',sans-serif;font-weight:800;font-size:1.1rem;color:var(--dark);margin-bottom:6px;}
+.upload-zone p{font-size:13px;color:#888;margin-bottom:16px;}
+.upload-formats{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.format-chip{background:#f0f0f5;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:600;color:#666;}
+#file-input{display:none;}
+.btn-upload{background:var(--dark);color:#fff;border:none;padding:12px 28px;border-radius:8px;font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:background .2s;margin-top:16px;}
+.btn-upload:hover{background:var(--magenta);}
+
+.file-preview{display:none;margin-top:20px;padding:16px 20px;background:#f0fdf4;border-radius:10px;border:1.5px solid #bbf7d0;align-items:center;gap:14px;}
+.file-preview .file-icon{font-size:28px;}
+.file-preview .file-info{flex:1;}
+.file-preview .file-name{font-weight:700;font-size:14px;color:var(--dark);}
+.file-preview .file-size{font-size:12px;color:#888;}
+.remove-file{background:none;border:none;color:#aaa;font-size:18px;cursor:pointer;padding:4px;}
+.remove-file:hover{color:#e53e3e;}
+
+.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,var(--magenta),#ff6b9d);color:#fff;border:none;border-radius:10px;font-family:'Nunito',sans-serif;font-weight:800;font-size:1rem;cursor:pointer;transition:all .2s;margin-top:20px;box-shadow:0 4px 20px rgba(230,0,172,.3);}
+.btn-submit:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(230,0,172,.4);}
+.btn-submit:disabled{opacity:.6;cursor:not-allowed;transform:none;}
+
+.submit-success{display:none;text-align:center;padding:32px;background:#f0fdf4;border-radius:14px;border:1.5px solid #bbf7d0;margin-top:20px;}
+.submit-success .check-big{font-size:56px;margin-bottom:14px;}
+.submit-success h3{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.3rem;color:#065f46;margin-bottom:8px;}
+.submit-success p{font-size:14px;color:#047857;}
+
+/* COMPLETE BTN */
+.complete-bar{background:var(--white);border-radius:14px;border:1.5px solid var(--border);padding:20px 24px;display:flex;align-items:center;justify-content:space-between;margin-top:24px;}
+.complete-bar p{font-size:14px;color:#666;}
+.complete-bar strong{color:var(--dark);}
+.btn-complete{background:linear-gradient(135deg,var(--green),#059669);color:#fff;border:none;padding:12px 28px;border-radius:8px;font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;cursor:pointer;transition:all .2s;display:flex;align-items:center;gap:8px;}
+.btn-complete:hover{transform:translateY(-1px);box-shadow:0 4px 16px rgba(16,185,129,.35);}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div class="logo"><span>M</span>ATHCOURSE</div>
+    <a href="temario.html" class="back-btn">← Volver al temario</a>
+  </div>
+  <div class="user-info">
+    <span id="user-nombre">Estudiante</span>
+    <div class="avatar" id="user-avatar">E</div>
+  </div>
+</header>
+
+<!-- BREADCRUMB -->
+<div class="breadcrumb">
+  <a href="temario.html">Temario</a> ›
+  <span>Unidad 1</span> ›
+  <span style="color:var(--dark);font-weight:600;">Lección 1.1</span>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-card">
+      <div class="sidebar-header">
+        <h3>Unidad 1</h3>
+        <p>Introducción al Álgebra</p>
+      </div>
+      <div class="sidebar-progress">
+        <div class="progress-label"><span>Progreso</span><span id="side-pct">0%</span></div>
+        <div class="progress-track"><div class="progress-fill" id="side-fill"></div></div>
+      </div>
+      <div class="lesson-nav">
+        <div class="lesson-nav-item active" onclick="loadLesson(this,'1.1','Definición y tipos de conjuntos')">
+          <div class="check">●</div> 1.1 Tipos de conjuntos
+        </div>
+        <div class="lesson-nav-item" onclick="loadLesson(this,'1.2','Operaciones y propiedades de los conjuntos')">
+          <div class="check"></div> 1.2 Operaciones
+        </div>
+        <div class="lesson-nav-item" onclick="loadLesson(this,'1.3','Diagramas de Venn')">
+          <div class="check"></div> 1.3 Diagramas de Venn
+        </div>
+        <div class="lesson-nav-item" onclick="loadLesson(this,'1.4','Producto Cartesiano y relaciones')">
+          <div class="check"></div> 1.4 Producto Cartesiano
+        </div>
+        <div class="lesson-nav-item" onclick="loadLesson(this,'1.5','Relaciones de equivalencia')">
+          <div class="check"></div> 1.5 Relaciones de equiv.
+        </div>
+        <div class="lesson-nav-item" onclick="loadLesson(this,'1.6','Definición de función')">
+          <div class="check"></div> 1.6 Funciones
+        </div>
+        <div class="lesson-nav-item" onclick="loadLesson(this,'1.7','Funciones inyectivas, suprayectivas y biyectivas')">
+          <div class="check"></div> 1.7 Tipos de funciones
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- LESSON HERO -->
+    <div class="lesson-hero">
+      <div class="lesson-tag">LECCIÓN <span id="lesson-num">1.1</span></div>
+      <h1 id="lesson-title">Definición y tipos de conjuntos</h1>
+      <div class="lesson-meta">
+        <div class="meta-chip">⏱ 45 min</div>
+        <div class="meta-chip">📖 Teoría + MATLAB</div>
+        <div class="meta-chip">📝 Tarea incluida</div>
+      </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('clase',this)">
+        <span class="tab-icon">📖</span> Iniciar Clase
+      </button>
+      <button class="tab" onclick="switchTab('matlab',this)">
+        <span class="tab-icon">💻</span> MATLAB
+      </button>
+      <button class="tab" onclick="switchTab('tarea',this)">
+        <span class="tab-icon">📝</span> Subir Tarea
+      </button>
+    </div>
+
+    <!-- ══ TAB 1: CLASE ══ -->
+    <div class="tab-panel active" id="panel-clase">
+
+      <div class="content-card">
+        <h2><div class="icon">📚</div> ¿Qué es un conjunto?</h2>
+        <p>Un <strong>conjunto</strong> es una colección bien definida de objetos distintos, llamados <strong>elementos</strong> o <strong>miembros</strong> del conjunto. La teoría de conjuntos es la base de toda la matemática moderna y nos permite organizar y clasificar objetos con propiedades comunes.</p>
+
+        <div class="definition-box">
+          <strong>Definición formal</strong>
+          <p>Un conjunto <em>A</em> es una colección de objetos bien determinados y distintos entre sí. Si un objeto <em>x</em> pertenece al conjunto <em>A</em>, se escribe <strong>x ∈ A</strong>; si no pertenece, se escribe <strong>x ∉ A</strong>.</p>
+        </div>
+
+        <p>Los conjuntos pueden representarse de tres formas: por <strong>extensión</strong> (listando sus elementos), por <strong>comprensión</strong> (describiendo una propiedad) o mediante <strong>diagramas de Venn</strong>.</p>
+
+        <div class="example-box">
+          <strong>Ejemplo</strong>
+          <p>El conjunto de los números pares menores que 10 puede escribirse:<br/>
+          • Por extensión: <strong>A = {2, 4, 6, 8}</strong><br/>
+          • Por comprensión: <strong>A = {x ∈ ℕ | x es par y x &lt; 10}</strong></p>
+        </div>
+      </div>
+
+      <div class="content-card">
+        <h2><div class="icon">🏷️</div> Tipos de conjuntos</h2>
+        <p>Existen diferentes clasificaciones de conjuntos según sus características y el número de elementos que contienen.</p>
+
+        <div class="types-grid">
+          <div class="type-card">
+            <div class="type-name"><span></span> Conjunto vacío</div>
+            <p>No contiene ningún elemento. Se denota como <code>∅</code> o <code>{}</code>. Ej: el conjunto de números pares impares.</p>
+          </div>
+          <div class="type-card">
+            <div class="type-name"><span></span> Conjunto finito</div>
+            <p>Tiene un número determinado de elementos. Ej: <code>A = {1, 2, 3, 4, 5}</code> tiene cardinalidad 5.</p>
+          </div>
+          <div class="type-card">
+            <div class="type-name"><span></span> Conjunto infinito</div>
+            <p>Sus elementos no pueden contarse completamente. Ej: <code>ℕ = {1, 2, 3, ...}</code></p>
+          </div>
+          <div class="type-card">
+            <div class="type-name"><span></span> Conjunto universal</div>
+            <p>Contiene todos los elementos del contexto estudiado, se denota como <code>U</code> o <code>Ω</code>.</p>
+          </div>
+          <div class="type-card">
+            <div class="type-name"><span></span> Subconjunto</div>
+            <p>El conjunto <code>A</code> es subconjunto de <code>B</code> si todo elemento de <code>A</code> también está en <code>B</code>. Se escribe <code>A ⊆ B</code>.</p>
+          </div>
+          <div class="type-card">
+            <div class="type-name"><span></span> Conjuntos iguales</div>
+            <p>Dos conjuntos son iguales si tienen exactamente los mismos elementos: <code>A = B</code> ↔ <code>A ⊆ B</code> y <code>B ⊆ A</code>.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- COMPLETE BAR -->
+      <div class="complete-bar">
+        <p>¿Terminaste de leer la lección? <strong>Marca como completada</strong></p>
+        <button class="btn-complete" onclick="completarClase()">
+          ✓ Marcar como completada
+        </button>
+      </div>
+    </div>
+
+    <!-- ══ TAB 2: MATLAB ══ -->
+    <div class="tab-panel" id="panel-matlab">
+
+      <div class="matlab-intro">
+        <div class="matlab-logo">🖥️</div>
+        <div>
+          <h2>Implementación en MATLAB</h2>
+          <p>Aprende cómo representar y manipular conjuntos usando MATLAB. Sigue los pasos en orden y ejecuta el código en tu entorno.</p>
+        </div>
+      </div>
+
+      <!-- Paso 1 -->
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h3>Definir conjuntos en MATLAB</h3>
+          <p>En MATLAB los conjuntos se representan como <strong>vectores o arreglos</strong>. Usa corchetes para definirlos:</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copiarCodigo(this)">Copiar</button>
+            <span class="comment">% Definir conjuntos como vectores</span><br/>
+            <span class="var">A</span> = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span>];<br/>
+            <span class="var">B</span> = [<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>];<br/><br/>
+            <span class="comment">% Mostrar los conjuntos</span><br/>
+            <span class="func">disp</span>(<span class="string">'Conjunto A:'</span>); <span class="func">disp</span>(<span class="var">A</span>);<br/>
+            <span class="func">disp</span>(<span class="string">'Conjunto B:'</span>); <span class="func">disp</span>(<span class="var">B</span>);
+          </div>
+          <div class="tip-box">
+            <strong>💡 Tip</strong>
+            <p>MATLAB no tiene un tipo de dato "conjunto" nativo, pero los vectores con la función <code>unique()</code> eliminan duplicados automáticamente.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 2 -->
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h3>Verificar pertenencia de un elemento</h3>
+          <p>Para verificar si un elemento <strong>x ∈ A</strong>, usa la función <code>ismember()</code>:</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copiarCodigo(this)">Copiar</button>
+            <span class="var">A</span> = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span>];<br/><br/>
+            <span class="comment">% ¿El 4 pertenece a A?</span><br/>
+            <span class="keyword">if</span> <span class="func">ismember</span>(<span class="number">4</span>, <span class="var">A</span>)<br/>
+            &nbsp;&nbsp;<span class="func">disp</span>(<span class="string">'4 ∈ A: Verdadero'</span>);<br/>
+            <span class="keyword">else</span><br/>
+            &nbsp;&nbsp;<span class="func">disp</span>(<span class="string">'4 ∉ A: Falso'</span>);<br/>
+            <span class="keyword">end</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paso 3 -->
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h3>Cardinalidad y conjunto vacío</h3>
+          <p>La <strong>cardinalidad</strong> (número de elementos) se obtiene con <code>length()</code> o <code>numel()</code>:</p>
+          <div class="code-block">
+            <button class="copy-btn" onclick="copiarCodigo(this)">Copiar</button>
+            <span class="var">A</span> = [<span class="number">2</span>, <span class="number">4</span>, <span class="number">6</span>, <span class="number">8</span>];<br/>
+            <span class="var">vacio</span> = [];&nbsp;&nbsp;<span class="comment">% Conjunto vacío</span><br/><br/>
+            <span class="func">fprintf</span>(<span class="string">'|A| = %d\n'</span>, <span class="func">length</span>(<span class="var">A</span>));<br/>
+            <span class="func">fprintf</span>(<span class="string">'|∅| = %d\n'</span>, <span class="func">length</span>(<span class="var">vacio</span>));<br/><br/>
+            <span class="comment">% Verificar si es vacío</span><br/>
+            <span class="keyword">if</span> <span class="func">isempty</span>(<span class="var">vacio</span>)<br/>
+            &nbsp;&nbsp;<span class="func">disp</span>(<span class="string">'El conjunto es vacío'</span>);<br/>
+            <span class="keyword">end</span>
+          </div>
+          <div class="tip-box">
+            <strong>✅ Resultado esperado</strong>
+            <p>Al ejecutar este código deberías ver: <code>|A| = 4</code> y <code>|∅| = 0</code> en la ventana de comandos de MATLAB.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ══ TAB 3: TAREA ══ -->
+    <div class="tab-panel" id="panel-tarea">
+
+      <div class="exercise-card">
+        <div class="exercise-header">
+          <div class="exercise-icon">📝</div>
+          <div>
+            <h2>Ejercicios de la Lección 1.1</h2>
+            <p>Resuelve los siguientes ejercicios y sube tu tarea en PDF o imagen</p>
+          </div>
+        </div>
+
+        <ul class="exercise-list">
+          <li class="exercise-item">
+            <div class="ex-num">1</div>
+            <div class="ex-text">
+              Dado el conjunto <code>A = {1, 3, 5, 7, 9}</code>, determina si los siguientes elementos pertenecen o no a A: 3, 6, 9, 11. Justifica tu respuesta usando notación de conjuntos (∈ / ∉).
+            </div>
+          </li>
+          <li class="exercise-item">
+            <div class="ex-num">2</div>
+            <div class="ex-text">
+              Escribe por comprensión el conjunto de todos los múltiplos de 3 menores que 30. Luego escríbelo también por extensión.
+            </div>
+          </li>
+          <li class="exercise-item">
+            <div class="ex-num">3</div>
+            <div class="ex-text">
+              Clasifica los siguientes conjuntos indicando si son: finitos, infinitos, vacíos o unitarios:<br/>
+              a) <code>A = {x ∈ ℕ | x² = 4}</code><br/>
+              b) <code>B = {x ∈ ℝ | x + 5 = 3}</code><br/>
+              c) <code>C = {x ∈ ℤ | x es par}</code>
+            </div>
+          </li>
+          <li class="exercise-item">
+            <div class="ex-num">4</div>
+            <div class="ex-text">
+              <strong>MATLAB:</strong> Implementa en MATLAB la verificación de pertenencia del ejercicio 1. Captura el resultado de la ventana de comandos e inclúyelo en tu tarea.
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <!-- UPLOAD ZONE -->
+      <div class="exercise-card">
+        <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:1.1rem;margin-bottom:20px;display:flex;align-items:center;gap:10px;">
+          <span style="width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--orange),#ff8c42);display:inline-flex;align-items:center;justify-content:center;font-size:15px;">📤</span>
+          Entrega tu tarea
+        </h2>
+
+        <div class="upload-zone" id="upload-zone" onclick="document.getElementById('file-input').click()"
+             ondragover="event.preventDefault();this.classList.add('dragover')"
+             ondragleave="this.classList.remove('dragover')"
+             ondrop="handleDrop(event)">
+          <div class="upload-icon">📄</div>
+          <h3>Arrastra tu archivo aquí</h3>
+          <p>o haz clic para seleccionar desde tu computadora</p>
+          <div class="upload-formats">
+            <span class="format-chip">PDF</span>
+            <span class="format-chip">JPG</span>
+            <span class="format-chip">PNG</span>
+            <span class="format-chip">DOCX</span>
+          </div>
+          <button class="btn-upload" onclick="event.stopPropagation();document.getElementById('file-input').click()">
+            Seleccionar archivo
+          </button>
+        </div>
+
+        <input type="file" id="file-input" accept=".pdf,.jpg,.jpeg,.png,.docx" onchange="handleFile(this.files[0])"/>
+
+        <div class="file-preview" id="file-preview">
+          <div class="file-icon" id="file-icon">📄</div>
+          <div class="file-info">
+            <div class="file-name" id="file-name"></div>
+            <div class="file-size" id="file-size"></div>
+          </div>
+          <button class="remove-file" onclick="removeFile()">✕</button>
+        </div>
+
+        <button class="btn-submit" id="btn-submit" onclick="submitTarea()" disabled>
+          📤 Enviar Tarea
+        </button>
+      </div>
+
+      <!-- SUCCESS -->
+      <div class="submit-success" id="submit-success">
+        <div class="check-big">🎉</div>
+        <h3>¡Tarea enviada exitosamente!</h3>
+        <p>Tu tarea de la Lección 1.1 ha sido recibida. El maestro la revisará pronto.</p>
+      </div>
+
+    </div><!-- /panel-tarea -->
+
+  </main>
+</div><!-- /layout -->
+
+<script>
+  // ── TABS ──
+  function switchTab(name, btn) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('panel-' + name).classList.add('active');
+  }
+
+  // ── LECCIÓN SIDEBAR ──
+  let doneLessons = 0;
+  const totalLessons = 7;
+
+  function loadLesson(el, num, title) {
+    document.querySelectorAll('.lesson-nav-item').forEach(i => i.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('lesson-num').textContent   = num;
+    document.getElementById('lesson-title').textContent = title;
+    switchTab('clase', document.querySelector('.tab'));
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── COMPLETAR CLASE ──
+  function completarClase() {
+    const active = document.querySelector('.lesson-nav-item.active');
+    if (active && !active.classList.contains('done')) {
+      active.classList.add('done');
+      const check = active.querySelector('.check');
+      check.textContent = '✓';
+      doneLessons++;
+      updateProgress();
+    }
+    // Ir al tab de MATLAB
+    switchTab('matlab', document.querySelectorAll('.tab')[1]);
+  }
+
+  function updateProgress() {
+    const pct = Math.round((doneLessons / totalLessons) * 100);
+    document.getElementById('side-fill').style.width = pct + '%';
+    document.getElementById('side-pct').textContent  = pct + '%';
+  }
+
+  // ── COPIAR CÓDIGO ──
+  function copiarCodigo(btn) {
+    const block = btn.parentElement;
+    const text  = block.innerText.replace('Copiar','').trim();
+    navigator.clipboard.writeText(text).then(() => {
+      btn.textContent = '✓ Copiado';
+      setTimeout(() => btn.textContent = 'Copiar', 2000);
+    });
+  }
+
+  // ── UPLOAD ──
+  function handleFile(file) {
+    if (!file) return;
+    const preview  = document.getElementById('file-preview');
+    const icons    = { pdf:'📄', jpg:'🖼️', jpeg:'🖼️', png:'🖼️', docx:'📝' };
+    const ext      = file.name.split('.').pop().toLowerCase();
+    const sizeMB   = (file.size / 1024 / 1024).toFixed(2);
+
+    document.getElementById('file-icon').textContent = icons[ext] || '📄';
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-size').textContent = sizeMB + ' MB';
+    preview.style.display = 'flex';
+    document.getElementById('btn-submit').disabled = false;
+    document.getElementById('upload-zone').style.opacity = '.5';
+  }
+
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('upload-zone').classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+  }
+
+  function removeFile() {
+    document.getElementById('file-preview').style.display = 'none';
+    document.getElementById('file-input').value = '';
+    document.getElementById('btn-submit').disabled = true;
+    document.getElementById('upload-zone').style.opacity = '1';
+  }
+
+  function submitTarea() {
+    const btn = document.getElementById('btn-submit');
+    btn.textContent = 'Enviando...';
+    btn.disabled    = true;
+
+    // Simula envío (aquí conectarías con tu backend o Google Drive)
+    setTimeout(() => {
+      document.getElementById('submit-success').style.display = 'block';
+      document.getElementById('submit-success').scrollIntoView({ behavior: 'smooth' });
+      btn.style.display = 'none';
+
+      // Marcar lección como completada
+      const active = document.querySelector('.lesson-nav-item.active');
+      if (active && !active.classList.contains('done')) {
+        active.classList.add('done');
+        active.querySelector('.check').textContent = '✓';
+        doneLessons++;
+        updateProgress();
+      }
+    }, 1500);
+  }
+</script>
+</body>
+</html>
+<style>
+/* ══════════════════════════════════════
+   RESPONSIVE MÓVIL – leccion.html
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .topbar { padding: 12px 16px; gap: 8px; flex-wrap: wrap; }
+  .logo { font-size: 1.3rem; }
+  .back-btn { font-size: 12px; padding: 6px 10px; }
+
+  .breadcrumb { padding: 10px 16px; font-size: 11px; }
+
+  /* Layout: sidebar abajo en móvil */
+  .layout { flex-direction: column; padding: 0 0 40px; }
+  .sidebar { width: 100%; position: relative; }
+  .sidebar-card { border-radius: 0; border-left: none; border-right: none; }
+  .lesson-nav { display: none; } /* ocultar lista de lecciones en móvil para no ocupar espacio */
+
+  .main { padding: 16px; }
+
+  .lesson-hero { padding: 20px; border-radius: 12px; margin-bottom: 16px; }
+  .lesson-hero::before { display: none; }
+  .lesson-tag { font-size: 10px; }
+  .lesson-hero h1 { font-size: 1.2rem; }
+  .lesson-meta { flex-wrap: wrap; gap: 6px; }
+  .meta-chip { font-size: 11px; padding: 3px 10px; }
+
+  /* TABS */
+  .tabs { gap: 4px; padding: 4px; }
+  .tab { font-size: 12px; padding: 8px 6px; gap: 4px; }
+  .tab-icon { font-size: 13px; }
+
+  /* CONTENT */
+  .content-card { padding: 20px 16px; }
+  .content-card h2 { font-size: 1rem; }
+  .content-card p { font-size: 13px; }
+  .types-grid { grid-template-columns: 1fr; gap: 10px; }
+
+  /* MATLAB */
+  .matlab-intro { flex-direction: column; gap: 12px; padding: 20px; border-radius: 12px; }
+  .matlab-logo { font-size: 36px; }
+  .matlab-intro h2 { font-size: 1.1rem; }
+  .step-card { flex-direction: column; gap: 12px; padding: 16px; }
+  .code-block { font-size: 12px; padding: 12px; overflow-x: auto; }
+
+  /* TAREA */
+  .exercise-card { padding: 20px 16px; }
+  .exercise-header { flex-direction: column; gap: 10px; }
+  .exercise-item { flex-direction: column; gap: 8px; }
+  .upload-zone { padding: 24px 16px; }
+  .upload-icon { font-size: 36px; }
+  .upload-formats { gap: 6px; }
+
+  /* COMPLETE BAR */
+  .complete-bar { flex-direction: column; gap: 12px; text-align: center; padding: 16px; }
+  .btn-complete { width: 100%; justify-content: center; }
+}
+
+@media (max-width: 420px) {
+  .tabs { flex-wrap: wrap; }
+  .tab { flex: 0 0 calc(50% - 4px); }
+}
+</style>

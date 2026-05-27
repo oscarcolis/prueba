@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Temario – Álgebra desde Cero | MathCourse</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --magenta:#e600ac;
+  --dark:#2b2d42;
+  --orange:#ff6b35;
+  --bg:#f4f6fb;
+  --white:#fff;
+  --border:#e8eaf0;
+  --success:#10b981;
+}
+body{font-family:'Poppins',sans-serif;background:var(--bg);color:var(--dark);}
+
+/* TOPBAR */
+.topbar{
+  background:var(--white);
+  border-bottom:1px solid var(--border);
+  padding:14px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.logo{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.6rem;color:var(--dark);}
+.logo span{color:var(--magenta);}
+.user-info{display:flex;align-items:center;gap:12px;font-size:14px;color:#666;}
+.avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--magenta),#ff6b9d);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-weight:700;font-size:14px;
+}
+
+/* HERO BANNER */
+.hero{
+  background:linear-gradient(135deg,var(--dark) 0%,#1a1040 100%);
+  padding:40px 40px 0;
+  position:relative;overflow:hidden;
+}
+.hero::before{
+  content:'∑∫√π±∞';
+  position:absolute;right:40px;top:20px;
+  font-size:80px;opacity:.06;color:#fff;letter-spacing:8px;
+  font-family:'Nunito',sans-serif;
+}
+.breadcrumb-nav{
+  display:flex;align-items:center;gap:8px;
+  font-size:13px;color:rgba(255,255,255,.5);margin-bottom:20px;
+}
+.breadcrumb-nav a{color:var(--magenta);text-decoration:none;}
+.breadcrumb-nav span{color:rgba(255,255,255,.3);}
+.hero-inner{display:flex;align-items:flex-end;gap:32px;}
+.hero-icon{
+  width:80px;height:80px;border-radius:16px;
+  background:linear-gradient(135deg,#f093fb,#f5576c);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;flex-shrink:0;margin-bottom:-1px;
+}
+.hero-text h1{
+  font-family:'Nunito',sans-serif;font-weight:900;
+  font-size:2rem;color:#fff;margin-bottom:8px;
+}
+.hero-meta{display:flex;gap:20px;padding-bottom:24px;}
+.meta-pill{
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:20px;padding:4px 14px;
+  font-size:12px;color:rgba(255,255,255,.8);
+  display:flex;align-items:center;gap:6px;
+}
+.meta-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--success);}
+
+/* LAYOUT */
+.layout{display:flex;gap:0;min-height:calc(100vh - 200px);}
+
+/* SIDEBAR */
+.sidebar{
+  width:280px;flex-shrink:0;
+  background:var(--white);
+  border-right:1px solid var(--border);
+  padding:24px 0;
+  position:sticky;top:0;height:calc(100vh - 140px);
+  overflow-y:auto;
+}
+.sidebar-title{
+  font-size:11px;font-weight:700;letter-spacing:2px;
+  text-transform:uppercase;color:#aaa;
+  padding:0 24px;margin-bottom:16px;
+}
+.side-unit{margin-bottom:4px;}
+.side-unit-btn{
+  width:100%;text-align:left;
+  padding:10px 24px;border:none;background:none;
+  font-family:'Poppins',sans-serif;font-size:13px;
+  font-weight:600;color:var(--dark);cursor:pointer;
+  display:flex;align-items:center;gap:8px;
+  transition:background .15s,color .15s;
+}
+.side-unit-btn:hover{background:#f5f3ff;color:var(--magenta);}
+.side-unit-btn.active{color:var(--magenta);background:#fdf0fa;}
+.side-unit-btn .num{
+  width:22px;height:22px;border-radius:6px;
+  background:var(--border);color:#888;
+  font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.side-unit-btn.active .num{background:var(--magenta);color:#fff;}
+.side-lessons{padding:0 24px 0 54px;display:none;}
+.side-lessons.open{display:block;}
+.side-lesson{
+  font-size:12px;color:#888;padding:5px 0;
+  display:flex;align-items:center;gap:6px;cursor:pointer;
+  transition:color .15s;
+}
+.side-lesson:hover{color:var(--magenta);}
+.side-lesson::before{content:'›';color:#ccc;}
+
+/* MAIN CONTENT */
+.main{flex:1;padding:32px 40px;max-width:900px;}
+
+.toolbar{
+  display:flex;align-items:center;gap:12px;margin-bottom:28px;
+  flex-wrap:wrap;
+}
+.btn-tool{
+  padding:8px 18px;border-radius:8px;border:1.5px solid var(--border);
+  background:var(--white);font-family:'Poppins',sans-serif;
+  font-size:13px;font-weight:600;color:var(--dark);cursor:pointer;
+  transition:all .2s;display:flex;align-items:center;gap:6px;
+}
+.btn-tool:hover{border-color:var(--magenta);color:var(--magenta);}
+.progress-bar{
+  margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13px;color:#888;
+}
+.bar{width:120px;height:6px;background:#e8eaf0;border-radius:10px;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--magenta),#ff6b9d);border-radius:10px;width:0%;}
+
+/* UNIT BLOCK */
+.unit-block{margin-bottom:20px;border-radius:14px;overflow:hidden;border:1.5px solid var(--border);background:var(--white);}
+.unit-header{
+  padding:18px 24px;
+  background:linear-gradient(90deg,#f9f0fd,#fff);
+  display:flex;align-items:center;gap:14px;cursor:pointer;
+  transition:background .2s;user-select:none;
+}
+.unit-header:hover{background:linear-gradient(90deg,#f0e0fa,#fdf5ff);}
+.unit-num{
+  width:32px;height:32px;border-radius:8px;
+  background:var(--magenta);color:#fff;
+  font-weight:800;font-size:13px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.unit-name{
+  font-family:'Nunito',sans-serif;font-weight:800;
+  font-size:1rem;color:var(--dark);flex:1;
+}
+.unit-count{font-size:12px;color:#aaa;font-weight:500;}
+.unit-chevron{font-size:18px;color:#ccc;transition:transform .3s;}
+.unit-header.open .unit-chevron{transform:rotate(180deg);}
+
+.lessons-list{display:none;border-top:1.5px solid var(--border);}
+.lessons-list.open{display:block;}
+
+.lesson-row{
+  display:flex;align-items:center;gap:16px;
+  padding:14px 24px;border-bottom:1px solid #f5f5f8;
+  transition:background .15s;cursor:pointer;
+}
+.lesson-row:last-child{border-bottom:none;}
+.lesson-row:hover{background:#fdf8ff;}
+.lesson-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:#f3f0ff;color:var(--magenta);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.lesson-info{flex:1;}
+.lesson-num{font-size:11px;color:#bbb;font-weight:600;margin-bottom:2px;}
+.lesson-title{font-size:14px;font-weight:600;color:var(--dark);}
+.lesson-badge{
+  font-size:11px;padding:3px 10px;border-radius:20px;
+  font-weight:600;white-space:nowrap;
+}
+.badge-new{background:#fef3c7;color:#92400e;}
+.badge-done{background:#d1fae5;color:#065f46;}
+.badge-lock{background:#f3f4f6;color:#9ca3af;}
+
+/* WELCOME CARD */
+.welcome-card{
+  background:linear-gradient(135deg,var(--dark),#1a1040);
+  border-radius:14px;padding:28px 32px;margin-bottom:24px;
+  display:flex;align-items:center;gap:24px;
+}
+.welcome-card .icon{font-size:48px;}
+.welcome-card h2{font-family:'Nunito',sans-serif;font-weight:900;font-size:1.3rem;color:#fff;margin-bottom:6px;}
+.welcome-card p{font-size:13px;color:rgba(255,255,255,.65);line-height:1.6;}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<header class="topbar">
+  <div class="logo"><span>M</span>ATHCOURSE</div>
+  <div class="user-info">
+    <span>Bienvenido, Estudiante</span>
+    <div class="avatar">E</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+  <nav class="breadcrumb-nav">
+    <a href="index.html">Inicio</a><span>›</span>
+    <a href="curso.html">Cursos</a><span>›</span>
+    <span style="color:rgba(255,255,255,.7)">Álgebra desde Cero</span>
+  </nav>
+  <div class="hero-inner">
+    <div class="hero-icon">➕</div>
+    <div class="hero-text">
+      <h1>Álgebra desde Cero</h1>
+      <div class="hero-meta">
+        <div class="meta-pill"><div class="dot"></div> 4 Unidades</div>
+        <div class="meta-pill">📚 28 Lecciones</div>
+        <div class="meta-pill">🎓 24 clases</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LAYOUT -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-title">Contenido del curso</div>
+
+    <div class="side-unit">
+      <button class="side-unit-btn active" onclick="toggleSide(this)">
+        <span class="num">1</span> Introducción al Álgebra
+      </button>
+      <div class="side-lessons open">
+        <div class="side-lesson">Conjuntos y tipos</div>
+        <div class="side-lesson">Operaciones de conjuntos</div>
+        <div class="side-lesson">Diagramas de Venn</div>
+        <div class="side-lesson">Producto Cartesiano</div>
+        <div class="side-lesson">Relaciones de equivalencia</div>
+        <div class="side-lesson">Definición de función</div>
+        <div class="side-lesson">Tipos de funciones</div>
+      </div>
+    </div>
+
+    <div class="side-unit">
+      <button class="side-unit-btn" onclick="toggleSide(this)">
+        <span class="num">2</span> Estructuras Algebraicas
+      </button>
+      <div class="side-lessons">
+        <div class="side-lesson">Operación binaria</div>
+        <div class="side-lesson">Ley de composición</div>
+        <div class="side-lesson">Monoide y Semigrupo</div>
+        <div class="side-lesson">Grupo y conmutativo</div>
+        <div class="side-lesson">Anillo y tipos</div>
+        <div class="side-lesson">Campo</div>
+      </div>
+    </div>
+
+    <div class="side-unit">
+      <button class="side-unit-btn" onclick="toggleSide(this)">
+        <span class="num">3</span> Teoría de Números
+      </button>
+      <div class="side-lessons">
+        <div class="side-lesson">Números naturales</div>
+        <div class="side-lesson">Racionales e irracionales</div>
+        <div class="side-lesson">Teorema del conteo</div>
+        <div class="side-lesson">Teorema del Binomio</div>
+        <div class="side-lesson">Inducción matemática</div>
+        <div class="side-lesson">Progresiones</div>
+      </div>
+    </div>
+
+    <div class="side-unit">
+      <button class="side-unit-btn" onclick="toggleSide(this)">
+        <span class="num">4</span> Números Complejos
+      </button>
+      <div class="side-lessons">
+        <div class="side-lesson">Forma cartesiana</div>
+        <div class="side-lesson">Forma binomial</div>
+        <div class="side-lesson">Forma polar</div>
+        <div class="side-lesson">Forma exponencial</div>
+        <div class="side-lesson">Operaciones</div>
+        <div class="side-lesson">Campo de los complejos</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- Welcome -->
+    <div class="welcome-card">
+      <div class="icon">🎯</div>
+      <div>
+        <h2>¡Registro exitoso! Aquí está tu temario</h2>
+        <p>Explora las 4 unidades y 28 lecciones del curso. Haz clic en cada unidad para ver su contenido. ¡Mucho éxito!</p>
+      </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <button class="btn-tool" onclick="expandAll()">⊞ Expandir todo</button>
+      <button class="btn-tool" onclick="collapseAll()">⊟ Contraer todo</button>
+      <div class="progress-bar">
+        <span>Tu progreso</span>
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+        <span id="prog-text">0%</span>
+      </div>
+    </div>
+
+    <!-- UNIDAD 1 -->
+    <div class="unit-block">
+      <div class="unit-header open" onclick="toggleUnit(this)">
+        <div class="unit-num">1</div>
+        <div class="unit-name">Introducción al Álgebra</div>
+        <div class="unit-count">7 lecciones</div>
+        <span class="unit-chevron">▾</span>
+      </div>
+      <div class="lessons-list open">
+        <div class="lesson-row" onclick="irLeccion(this)">
+          <div class="lesson-icon">📘</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 1.1</div>
+            <div class="lesson-title">Definición y tipos de conjuntos</div>
+          </div>
+          <span class="lesson-badge badge-new">Nuevo</span>
+        </div>
+        <div class="lesson-row" onclick="irLeccion(this)">
+          <div class="lesson-icon">📘</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 1.2</div>
+            <div class="lesson-title">Operaciones y propiedades de los conjuntos</div>
+          </div>
+          <span class="lesson-badge badge-new">Nuevo</span>
+        </div>
+        <div class="lesson-row" onclick="irLeccion(this)">
+          <div class="lesson-icon">📘</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 1.3</div>
+            <div class="lesson-title">Diagramas de Venn</div>
+          </div>
+          <span class="lesson-badge badge-new">Nuevo</span>
+        </div>
+        <div class="lesson-row" onclick="irLeccion(this)">
+          <div class="lesson-icon">📘</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 1.4</div>
+            <div class="lesson-title">Producto Cartesiano y relaciones</div>
+          </div>
+          <span class="lesson-badge badge-new">Nuevo</span>
+        </div>
+        <div class="lesson-row" onclick="irLeccion(this)">
+          <div class="lesson-icon">📘</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 1.5</div>
+            <div class="lesson-title">Relaciones de equivalencia</div>
+          </div>
+          <span class="lesson-badge badge-new">Nuevo</span>
+        </div>
+        <div class="lesson-row" onclick="irLeccion(this)">
+          <div class="lesson-icon">📘</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 1.6</div>
+            <div class="lesson-title">Definición de función</div>
+          </div>
+          <span class="lesson-badge badge-new">Nuevo</span>
+        </div>
+        <div class="lesson-row" onclick="irLeccion(this)">
+          <div class="lesson-icon">📘</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 1.7</div>
+            <div class="lesson-title">Funciones inyectivas, suprayectivas y biyectivas</div>
+          </div>
+          <span class="lesson-badge badge-new">Nuevo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNIDAD 2 -->
+    <div class="unit-block">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-num">2</div>
+        <div class="unit-name">Estructuras Algebraicas</div>
+        <div class="unit-count">7 lecciones</div>
+        <span class="unit-chevron">▾</span>
+      </div>
+      <div class="lessons-list">
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔢</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 2.1</div><div class="lesson-title">Operación binaria</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔢</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 2.2</div><div class="lesson-title">Ley de composición interna</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔢</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 2.3</div><div class="lesson-title">Monoide</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔢</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 2.4</div><div class="lesson-title">Semigrupo</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔢</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 2.5</div><div class="lesson-title">Grupo y grupo conmutativo</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔢</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 2.6</div><div class="lesson-title">Anillo y tipos de anillos</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔢</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 2.7</div><div class="lesson-title">Campo</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNIDAD 3 -->
+    <div class="unit-block">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-num">3</div>
+        <div class="unit-name">Teoría de Números</div>
+        <div class="unit-count">9 lecciones</div>
+        <span class="unit-chevron">▾</span>
+      </div>
+      <div class="lessons-list">
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.1</div><div class="lesson-title">Definición de números naturales</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.2</div><div class="lesson-title">Números racionales, irracionales y reales</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.3</div><div class="lesson-title">Teorema fundamental del conteo, progresiones y combinaciones</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.4</div><div class="lesson-title">Teorema del Binomio</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.4.1</div><div class="lesson-title">Propiedades de los exponentes y radicales</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.4.2</div><div class="lesson-title">Sumas</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.4.3</div><div class="lesson-title">Término general y desarrollo del binomio</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 3.5</div><div class="lesson-title">Inducción matemática</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🔣</div>
+          <div class="lesson-info">
+            <div class="lesson-num">LECCIÓN 3.6</div>
+            <div class="lesson-title">Progresiones: aritméticas, geométricas y sistemas de ecuaciones</div>
+          </div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UNIDAD 4 -->
+    <div class="unit-block">
+      <div class="unit-header" onclick="toggleUnit(this)">
+        <div class="unit-num">4</div>
+        <div class="unit-name">Números Complejos</div>
+        <div class="unit-count">6 lecciones</div>
+        <span class="unit-chevron">▾</span>
+      </div>
+      <div class="lessons-list">
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🌀</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 4.1</div><div class="lesson-title">Forma cartesiana</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🌀</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 4.2</div><div class="lesson-title">Forma binomial</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🌀</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 4.3</div><div class="lesson-title">Forma polar</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🌀</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 4.4</div><div class="lesson-title">Forma exponencial</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🌀</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 4.5</div><div class="lesson-title">Operaciones: suma, resta, multiplicación, potencia, división, radicación y logaritmo</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+        <div class="lesson-row" onclick="markDone(this)">
+          <div class="lesson-icon">🌀</div>
+          <div class="lesson-info"><div class="lesson-num">LECCIÓN 4.6</div><div class="lesson-title">El campo de los números complejos</div></div>
+          <span class="lesson-badge badge-lock">Bloqueado</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const TOTAL = 29;
+  let done = 0;
+
+  function toggleUnit(header) {
+    header.classList.toggle('open');
+    const list = header.nextElementSibling;
+    list.classList.toggle('open');
+  }
+
+  function expandAll() {
+    document.querySelectorAll('.unit-header').forEach(h => {
+      h.classList.add('open');
+      h.nextElementSibling.classList.add('open');
+    });
+  }
+
+  function collapseAll() {
+    document.querySelectorAll('.unit-header').forEach(h => {
+      h.classList.remove('open');
+      h.nextElementSibling.classList.remove('open');
+    });
+  }
+
+  function toggleSide(btn) {
+    document.querySelectorAll('.side-unit-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const lessons = btn.nextElementSibling;
+    const wasOpen = lessons.classList.contains('open');
+    document.querySelectorAll('.side-lessons').forEach(l => l.classList.remove('open'));
+    if (!wasOpen) lessons.classList.add('open');
+  }
+
+  function markDone(row) {
+    const badge = row.querySelector('.lesson-badge');
+    if (badge.classList.contains('badge-done')) {
+      badge.classList.remove('badge-done');
+      badge.classList.add('badge-new');
+      badge.textContent = 'Nuevo';
+      done = Math.max(0, done - 1);
+    } else {
+      badge.classList.remove('badge-new','badge-lock');
+      badge.classList.add('badge-done');
+      badge.textContent = '✓ Visto';
+      done++;
+    }
+    const pct = Math.round((done / TOTAL) * 100);
+    document.getElementById('bar-fill').style.width = pct + '%';
+    document.getElementById('prog-text').textContent = pct + '%';
+  }
+  function irLeccion(row) {
+  let token = new URLSearchParams(window.location.search).get('token');
+  
+  // Si no hay token en la URL, buscar en sessionStorage
+  if (!token) {
+    token = sessionStorage.getItem('mc_token');
+  }
+  
+  if (token) {
+    window.location.href = 'leccion.html?token=' + token;
+  } else {
+    // Para pruebas locales, ir directo
+    window.location.href = 'leccion.html?token=test';
+  }
+}
+</script>
+</body>
+</html>
+<style>
+/* ══════════════════════════════════════
+   RESPONSIVE MÓVIL – temario.html
+══════════════════════════════════════ */
+@media (max-width: 768px) {
+  .topbar { padding: 12px 16px; flex-wrap: wrap; gap: 8px; }
+  .logo { font-size: 1.3rem; }
+  .user-info { font-size: 12px; }
+  .avatar { width: 30px; height: 30px; font-size: 12px; }
+
+  .hero { padding: 24px 20px 0; }
+  .hero::before { display: none; }
+  .hero-text h1 { font-size: 1.4rem; }
+  .hero-icon { width: 56px; height: 56px; font-size: 24px; }
+  .hero-meta { flex-wrap: wrap; gap: 8px; padding-bottom: 16px; }
+  .meta-pill { font-size: 11px; padding: 3px 10px; }
+  .breadcrumb-nav { font-size: 11px; margin-bottom: 12px; }
+
+  /* Ocultar sidebar en móvil, mostrar como acordeón arriba */
+  .layout { flex-direction: column; }
+  .sidebar {
+    width: 100%;
+    height: auto;
+    position: relative;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 0;
+  }
+  .sidebar-title { padding: 0 16px; }
+  .side-unit-btn { padding: 10px 16px; font-size: 12px; }
+  .side-lessons { padding: 0 16px 0 40px; }
+
+  .main { padding: 20px 16px 40px; }
+  .toolbar { gap: 8px; }
+  .btn-tool { padding: 7px 12px; font-size: 12px; }
+  .progress-bar { display: none; }
+
+  .welcome-card { flex-direction: column; gap: 12px; padding: 20px; }
+  .welcome-card .icon { font-size: 36px; }
+  .welcome-card h2 { font-size: 1.1rem; }
+  .welcome-card p { font-size: 12px; }
+
+  .unit-header { padding: 14px 16px; gap: 10px; }
+  .unit-num { width: 26px; height: 26px; font-size: 11px; }
+  .unit-name { font-size: .9rem; }
+  .unit-count { display: none; }
+
+  .lesson-row { padding: 12px 16px; gap: 10px; }
+  .lesson-icon { width: 30px; height: 30px; font-size: 14px; }
+  .lesson-title { font-size: 13px; }
+  .lesson-num { font-size: 10px; }
+  .lesson-badge { font-size: 10px; padding: 2px 8px; }
+}
+</style>
